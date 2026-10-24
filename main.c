@@ -20,11 +20,33 @@ typedef struct args {
 
 //}
 
-int	x(char **argv) {
-	int index;
+int	read_read(char *path) {
 	DIR *dirp;
 	struct dirent *dp;
 	struct stat	*sp = malloc(sizeof(struct stat));
+
+	dirp = opendir(path);
+	if (dirp == NULL)
+		return (1);
+	dp = readdir(dirp);
+	while (dp != NULL) {
+		stat(dp->d_name, sp);
+		ft_printf("%s\n", dp->d_name);
+		ft_printf("FILE SIZE %d\n", sp->st_blocks);
+		if (S_IFDIR & sp->st_mode) {
+			ft_printf("FILE is a dir %s\n", dp->d_name);
+			//how to make this recursicve becasue all good things in life are.
+			//open dir again and read dir agin if dirr call again till you reach the end and there is no dir.
+			return read_read(dp->d_name);
+		}
+		dp = readdir(dirp);
+	}
+	closedir(dirp);
+	return 0;
+}
+
+int	x(char **argv) {
+	int index;
 
 	index = 1;
 	if (argv[index][0] == '-') {
@@ -34,22 +56,7 @@ int	x(char **argv) {
 			//here I would say we build a data strucure
 			//so we just get all names stat and open dirs maybe same some info for printf
 			while (argv[index]) {
-				dirp = opendir(argv[index]);
-				if (dirp == NULL)
-					return (1);
-				dp = readdir(dirp);
-				while (dp != NULL) {
-					stat(dp->d_name, sp);
-					ft_printf("%s\n", dp->d_name);
-					ft_printf("FILE SIZE %d\n", sp->st_blocks);
-					if (S_IFDIR & sp->st_mode) {
-						//dirp = opendir(argv[index]); its a directory
-						ft_printf("FILE is a dir %s\n", dp->d_name);
-					}
-					dp = readdir(dirp);
-					index++;
-				}
-				closedir(dirp);
+				read_read(argv[index]);
 				index++;
 			}
 		}
