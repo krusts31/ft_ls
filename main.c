@@ -1,24 +1,75 @@
+#include <stdbool.h> 
+#include <dirent.h>
 #include "libft.h"
 #include "ft_printf.h"
 
-void	x() {
-	dirp = opendir(".");
-	if (dirp == NULL)
-		   return (ERROR);
-	len = strlen(name);
-	while ((dp = readdir(dirp)) != NULL) {
-		   if (dp->d_namlen == len && strcmp(dp->d_name, name) == 0) {
-				   (void)closedir(dirp);
-				   return (FOUND);
-		   }
+typedef struct args {
+	bool	l_flag;
+	bool	a_flag;
+	bool	r_flag;
+	bool	R_flag;
+	bool	t_flag;
+}	t_args;
+
+//need some kind of data structure for storing director information.
+
+//t_args	parse_args(char *args) {
+	
+
+//}
+
+int	x(char **argv) {
+	int index;
+	DIR *dirp;
+	struct dirent *dp;
+
+	index = 1;
+	if (argv[index][0] == '-') {
+		if (ft_strchr(argv[index], 'R')) {
+			ft_printf("user want to RECUREST\n");
+			//here I would say we build a data strucure
+			//so we just get all names stat and open dirs maybe same some info for printf
+		}
+		if (ft_strchr(argv[index], 't')) {
+			ft_printf("user want to t\n");
+			//here we sort by most recently modified time
+		}
+		if (ft_strchr(argv[index], 'r')) {
+			ft_printf("user want to recurest\n");
+			//here we just reverse some kind of order that ls uses
+			//this goes last since se can just reverse the order of our data strucutre
+		}
+		if (ft_strchr(argv[index], 'a')) {
+			ft_printf("user want to hiden files\n");
+			//include hiden files in your output
+		}
+		if (ft_strchr(argv[index], 'l')) {
+			ft_printf("user want a list\n");
+			//here we will just us a different priting ofrmat
+		}
+		index++;
 	}
-	(void)closedir(dirp);
-	return (NOT_FOUND);
+	//
+	while (argv[index]) {
+		dirp = opendir(argv[index]);
+		if (dirp == NULL)
+			return (1);
+		dp = readdir(dirp);
+		while (dp != NULL) {
+			ft_printf("%s\n", dp->d_name);
+			dp = readdir(dirp);
+			index++;
+		}
+		closedir(dirp);
+	}
+	return (0);
 }
 
 int	main(int argc, char **argv) {
-
-	
-	ft_printf("Hello World");
+	(void)argc;
+	//if (argc == 1) {
+		
+	//}
+	x(argv);
 	return (0);
 }
