@@ -1,7 +1,7 @@
 # ft\_ls
 
 ## DAMN? 
-wow just did you know ls sort stuff alhapbeticaly.
+wow just did you know ls sort stuff alhapbeticaly. after reading the man I found out that this alphabetical stuff depends on the filesystem.
 
 I did not want to handle like `ls -la -R` and `ls -laR`. This project can not be about user input parsing although I find this hard to solve will skip because I am afraid I wount be able to finish it. :D
 so I assume there will only be 1 argument by the user and it wil be `-laR` for example but it wont be `-l` `-a` etc it will be just 1 arg with all the flags.
