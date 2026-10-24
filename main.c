@@ -35,8 +35,7 @@ int	read_read(char *path) {
 		ft_printf("FILE SIZE %d\n", sp->st_blocks);
 		if (S_IFDIR & sp->st_mode) {
 			ft_printf("FILE is a dir %s\n", dp->d_name);
-			//how to make this recursicve becasue all good things in life are.
-			//open dir again and read dir agin if dirr call again till you reach the end and there is no dir.
+			//so here I want to have a linked list. kind of build a strucutre???? or just fucking printing it? how will I reverse it? Well u can't :D it makes sense to read in all the information in some kind of linked list and the do the priting I guess that is why in the subject they say for accounting for -R.
 			return read_read(dp->d_name);
 		}
 		dp = readdir(dirp);
