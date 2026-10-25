@@ -32,19 +32,19 @@ int	read_read(char *path) {
 	dp = readdir(dirp);
 	while (dp != NULL) {
 		stat(dp->d_name, sp);
-		ft_printf("FILE NAME %s\n", dp->d_name);
-		ft_printf("FILE SIZE %d\n", sp->st_blocks);
+		//ft_printf("FILE NAME %s\n", dp->d_name);
+		//ft_printf("FILE SIZE %d\n", sp->st_blocks);
 		if ((dp->d_name[0] == '.' && dp->d_name[1] == '\0') || (dp->d_name[1] == '.' && dp->d_name[2] == '\0')) {
 			//this filters out . and .. we dont want to recurse over those.
 			dp = readdir(dirp);
 			continue ;
 		}
 		//ft_printf("sp->d_name[0] == . : %d\n", dp->d_name[0] == '.');
-	       //if ((dp->d_name[0] == '.') && (dp->d_name[1] == '\0') || ((dp->d_name[1] == '.') && (dp->d_name[2] == '\0'))) {
+	        //if ((dp->d_name[0] == '.') && (dp->d_name[1] == '\0') || ((dp->d_name[1] == '.') && (dp->d_name[2] == '\0'))) {
 		//	continue ;
 		//}
 		if (S_IFDIR & sp->st_mode) {
-			ft_printf("FILE is a dir %s\n", dp->d_name);
+			//ft_printf("FILE is a dir %s\n", dp->d_name);
 			//so here I want to have a linked list. kind of build a strucutre???? or just fucking printing it? how will I reverse it? Well u can't :D it makes sense to read in all the information in some kind of linked list and the do the priting I guess that is why in the subject they say for accounting for -R.
 			//how do we doo this some 
 			/*
@@ -57,8 +57,15 @@ file file file file file
 fiel 
 .dir
 */
-			read_read(dp->d_name);
+			//kaut ka te vaig pielikt klat iepreiksejo path....
+			char *tmp = ft_strjoin(path, "/");
+			char *tmp2 = ft_strjoin(tmp, dp->d_name);
+			ft_printf("going to %s\n", tmp2);
+			read_read(tmp2);
+			free(tmp);
+			free(tmp2);
 		}
+		ft_printf("name %s\n", dp->d_name);
 		dp = readdir(dirp);
 	}
 	closedir(dirp);
