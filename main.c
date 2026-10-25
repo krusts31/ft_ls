@@ -1,5 +1,6 @@
 #include <stdbool.h> 
 #include <dirent.h>
+#include <string.h>
 #include "libft.h"
 #include "ft_printf.h"
 #include <stdlib.h>
@@ -31,12 +32,31 @@ int	read_read(char *path) {
 	dp = readdir(dirp);
 	while (dp != NULL) {
 		stat(dp->d_name, sp);
-		ft_printf("%s\n", dp->d_name);
+		ft_printf("FILE NAME %s\n", dp->d_name);
 		ft_printf("FILE SIZE %d\n", sp->st_blocks);
+		if (dp->d_name[0] == '.' || dp->d_name[1] == '.') {
+			dp = readdir(dirp);
+			continue ;
+		}
+		//ft_printf("sp->d_name[0] == . : %d\n", dp->d_name[0] == '.');
+	       //if ((dp->d_name[0] == '.') && (dp->d_name[1] == '\0') || ((dp->d_name[1] == '.') && (dp->d_name[2] == '\0'))) {
+		//	continue ;
+		//}
 		if (S_IFDIR & sp->st_mode) {
 			ft_printf("FILE is a dir %s\n", dp->d_name);
 			//so here I want to have a linked list. kind of build a strucutre???? or just fucking printing it? how will I reverse it? Well u can't :D it makes sense to read in all the information in some kind of linked list and the do the priting I guess that is why in the subject they say for accounting for -R.
-			return read_read(dp->d_name);
+			//how do we doo this some 
+			/*
+
+some struct linked list that would be a dir
+then we weould say if a then we would say het I am parent dir which is always the first object read in I think the . some then we know that all the files have this set to false ro something
+when we print we check hey parent dir and all the other files that follow are regular files in that dir are just files.
+. dir
+file file file file file
+fiel 
+.dir
+*/
+			read_read(dp->d_name);
 		}
 		dp = readdir(dirp);
 	}
