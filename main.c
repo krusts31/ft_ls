@@ -34,7 +34,8 @@ int	read_read(char *path) {
 		stat(dp->d_name, sp);
 		ft_printf("FILE NAME %s\n", dp->d_name);
 		ft_printf("FILE SIZE %d\n", sp->st_blocks);
-		if (dp->d_name[0] == '.' || dp->d_name[1] == '.') {
+		if ((dp->d_name[0] == '.' && dp->d_name[1] == '\0') || (dp->d_name[1] == '.' && dp->d_name[2] == '\0')) {
+			//this filters out . and .. we dont want to recurse over those.
 			dp = readdir(dirp);
 			continue ;
 		}
