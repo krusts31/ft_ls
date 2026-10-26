@@ -14,12 +14,24 @@ typedef struct args {
 	bool	t_flag;
 }	t_args;
 
+typedef struct s_dir {
+	char	*path;
+	struct	s_dir	*next;
+}	t_dir;
+
 //need some kind of data structure for storing director information.
 
 //t_args	parse_args(char *args) {
 	
 
 //}
+
+//maybe the logic is first print all the files
+//and if you ecounter a directory push taht on a stack and then just loop over the stack?
+
+//its more that current dir is respected its not about how deep you ar ein recursions its more like
+//so first we need to finsh looping over all files and then we can open a dir go inside it and print it 
+//jjjkk
 
 int	read_read(char *path) {
 	DIR *dirp;
@@ -30,6 +42,9 @@ int	read_read(char *path) {
 	if (dirp == NULL)
 		return (1);
 	dp = readdir(dirp);
+	//in stadart mode it prints
+	//first all files.
+	//the dirs
 	while (dp != NULL) {
 		stat(dp->d_name, sp);
 		//ft_printf("FILE NAME %s\n", dp->d_name);
@@ -47,6 +62,7 @@ int	read_read(char *path) {
 			//ft_printf("FILE is a dir %s\n", dp->d_name);
 			//so here I want to have a linked list. kind of build a strucutre???? or just fucking printing it? how will I reverse it? Well u can't :D it makes sense to read in all the information in some kind of linked list and the do the priting I guess that is why in the subject they say for accounting for -R.
 			//how do we doo this some 
+
 			/*
 
 some struct linked list that would be a dir
@@ -57,14 +73,17 @@ file file file file file
 fiel 
 .dir
 */
+			//
 			//kaut ka te vaig pielikt klat iepreiksejo path....
 			char *tmp = ft_strjoin(path, "/");
 			char *tmp2 = ft_strjoin(tmp, dp->d_name);
-			ft_printf("going to %s\n", tmp2);
+			//ft_printf("going to %s\n", tmp2);
 			read_read(tmp2);
 			free(tmp);
 			free(tmp2);
+			//push to stack?
 		}
+		//
 		ft_printf("name %s\n", dp->d_name);
 		dp = readdir(dirp);
 	}
