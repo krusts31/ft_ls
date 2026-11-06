@@ -59,9 +59,12 @@ int	read_read(char *path, t_args x) {
 	if (dirp == NULL)
 		return (1);
 	dp = readdir(dirp);
+
 	//in stadart mode it prints
 	//first all files.
 	//the dirs
+
+	
 	while (dp != NULL) {
 		stat(dp->d_name, sp);
 		//ft_printf("FILE NAME %s\n", dp->d_name);
@@ -75,7 +78,7 @@ int	read_read(char *path, t_args x) {
 	        //if ((dp->d_name[0] == '.') && (dp->d_name[1] == '\0') || ((dp->d_name[1] == '.') && (dp->d_name[2] == '\0'))) {
 		//	continue ;
 		//}
-		if (S_IFDIR & sp->st_mode) {
+		if (S_IFDIR & sp->st_mode && x.R_flag) {
 			//ft_printf("FILE is a dir %s\n", dp->d_name);
 			//so here I want to have a linked list. kind of build a strucutre???? or just fucking printing it? how will I reverse it? Well u can't :D it makes sense to read in all the information in some kind of linked list and the do the priting I guess that is why in the subject they say for accounting for -R.
 			//how do we doo this some 
@@ -123,8 +126,17 @@ fiel
 
 int	x(char **argv) {
 	int index;
+	bool	path = true;
 	t_args x;
 
+	index = 1;
+	while (argv[index]) {
+		if (argv[index][0] != '-') {
+			path = false;
+			break ;
+		}
+		index++;
+	}
 	index = 1;
 	while (argv[index]) {
 		if (argv[index][0] == '-') {
@@ -151,6 +163,7 @@ int	x(char **argv) {
 			}
 			if (ft_strchr(argv[index], 'R')) {
 				index = 2;
+				x.R_flag = true;
 				ft_printf("user want to RECUREST\n");
 				//here I would say we build a data strucure
 				//so we just get all names stat and open dirs maybe same some info for printf
@@ -159,8 +172,13 @@ int	x(char **argv) {
 					index++;
 				}
 			}
+		} else {
+			read_read(argv[index], x);
 		}
 		index++;
+	}
+	if (path) {
+		read_read(".", x);
 	}
 	//
 	return (0);
