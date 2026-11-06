@@ -33,7 +33,7 @@ typedef struct s_dir {
 //so first we need to finsh looping over all files and then we can open a dir go inside it and print it 
 //jjjkk
 
-int	read_read(char *path) {
+int	read_read(char *path, t_args x) {
 	DIR *dirp;
 	struct dirent *dp;
 	struct stat	*sp = malloc(sizeof(struct stat));
@@ -75,16 +75,25 @@ fiel
 */
 			//
 			//kaut ka te vaig pielikt klat iepreiksejo path....
+			if (!x.a_flag && dp->d_name[0] == '.') {
+				dp = readdir(dirp);
+				continue ;
+			}
 			char *tmp = ft_strjoin(path, "/");
 			char *tmp2 = ft_strjoin(tmp, dp->d_name);
 			//ft_printf("going to %s\n", tmp2);
-			read_read(tmp2);
+			read_read(tmp2, x);
 			free(tmp);
 			free(tmp2);
 			//push to stack?
 		}
 		//
-		ft_printf("name %s\n", dp->d_name);
+		if (!x.a_flag && dp->d_name[0] == '.') {
+			dp = readdir(dirp);
+			continue ;
+		} else {
+			ft_printf("name %s\n", dp->d_name);
+		}
 		dp = readdir(dirp);
 	}
 	closedir(dirp);
@@ -93,38 +102,44 @@ fiel
 
 int	x(char **argv) {
 	int index;
+	t_args x;
 
 	index = 1;
-	if (argv[index][0] == '-') {
-		if (ft_strchr(argv[index], 'R')) {
-			index = 2;
-			ft_printf("user want to RECUREST\n");
-			//here I would say we build a data strucure
-			//so we just get all names stat and open dirs maybe same some info for printf
-			while (argv[index]) {
-				read_read(argv[index]);
-				index++;
+	while (argv[index]) {
+		if (argv[index][0] == '-') {
+			if (ft_strchr(argv[index], 't')) {
+				ft_printf("user want to t\n");
+				x.t_flag = true;
+				//here we sort by most recently modified time
+			}
+			if (ft_strchr(argv[index], 'r')) {
+				ft_printf("user want to recurest\n");
+				x.r_flag = true;
+				//here we just reverse some kind of order that ls uses
+				//this goes last since se can just reverse the order of our data strucutre
+			}
+			if (ft_strchr(argv[index], 'a')) {
+				x.a_flag = true;
+				ft_printf("user want to hiden files\n");
+				//include hiden files in your output
+			}
+			if (ft_strchr(argv[index], 'l')) {
+				ft_printf("user want a list\n");
+				x.l_flag = true;
+				//here we will just us a different priting ofrmat
+			}
+			if (ft_strchr(argv[index], 'R')) {
+				index = 2;
+				ft_printf("user want to RECUREST\n");
+				//here I would say we build a data strucure
+				//so we just get all names stat and open dirs maybe same some info for printf
+				while (argv[index]) {
+					read_read(argv[index], x);
+					index++;
+				}
 			}
 		}
-/*
-		if (ft_strchr(argv[index], 't')) {
-			ft_printf("user want to t\n");
-			//here we sort by most recently modified time
-		}
-		if (ft_strchr(argv[index], 'r')) {
-			ft_printf("user want to recurest\n");
-			//here we just reverse some kind of order that ls uses
-			//this goes last since se can just reverse the order of our data strucutre
-		}
-		if (ft_strchr(argv[index], 'a')) {
-			ft_printf("user want to hiden files\n");
-			//include hiden files in your output
-		}
-		if (ft_strchr(argv[index], 'l')) {
-			ft_printf("user want a list\n");
-			//here we will just us a different priting ofrmat
-		}
-*/
+		index++;
 	}
 	//
 	return (0);
