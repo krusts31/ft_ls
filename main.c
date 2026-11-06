@@ -1,9 +1,14 @@
 #include <stdbool.h> 
+#include <pwd.h>
+#include <grp.h>
+#include <uuid/uuid.h>
+#include <time.h>
 #include <dirent.h>
 #include <string.h>
 #include "libft.h"
 #include "ft_printf.h"
 #include <stdlib.h>
+#include <stdio.h>
 #include <sys/stat.h>
 
 typedef struct args {
@@ -32,6 +37,18 @@ typedef struct s_dir {
 //its more that current dir is respected its not about how deep you ar ein recursions its more like
 //so first we need to finsh looping over all files and then we can open a dir go inside it and print it 
 //jjjkk
+
+void	print_l(struct dirent *dp, struct stat *sp) {
+	(void) dp;
+	struct group *grp;
+	struct passwd *pswd;
+
+	grp = getgrgid(sp->st_gid);
+	pswd = getpwuid(sp->st_uid);
+	printf("Last file modification:   %s %s %s %jd %s", ctime(&sp->st_mtime), pswd->pw_name, grp->gr_name , (intmax_t) sp->st_size, dp->d_name);
+	//ft_printf("Last status change:       %s", ctime(sb->st_ctime));
+	//ft_printf("Last file access:         %s", ctime(sb->st_atime));
+}
 
 int	read_read(char *path, t_args x) {
 	DIR *dirp;
@@ -92,7 +109,11 @@ fiel
 			dp = readdir(dirp);
 			continue ;
 		} else {
-			ft_printf("name %s\n", dp->d_name);
+			if (x.l_flag) {
+				print_l(dp, sp);
+			} else {
+				ft_printf("name %s\n", dp->d_name);
+			}
 		}
 		dp = readdir(dirp);
 	}
