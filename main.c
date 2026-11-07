@@ -1,6 +1,7 @@
 #include <stdbool.h> 
 #include <pwd.h>
 #include <grp.h>
+#include <time.h>
 #include <uuid/uuid.h>
 #include <time.h>
 #include <dirent.h>
@@ -11,6 +12,9 @@
 #include <stdio.h>
 #include <sys/stat.h>
 
+//need to handle -lar
+//and -l -a -r
+//at the same time
 typedef struct args {
 	bool	l_flag;
 	bool	a_flag;
@@ -38,14 +42,33 @@ typedef struct s_dir {
 //so first we need to finsh looping over all files and then we can open a dir go inside it and print it 
 //jjjkk
 
+char	*get_right_time(char *test) {
+	char **bits;
+	char *tmp;
+	char	*min;
+
+	min = ft_calloc(sizeof(char),6);
+	bits = ft_split(test, ' ');
+	tmp = ft_strjoin(bits[2], bits[1]);
+	ft_memmove(min, bits[3], 5);
+	return ft_strjoin(tmp, min);
+}
+
 void	print_l(struct dirent *dp, struct stat *sp) {
 	(void) dp;
 	struct group *grp;
 	struct passwd *pswd;
+	char	*l;
 
 	grp = getgrgid(sp->st_gid);
 	pswd = getpwuid(sp->st_uid);
-	printf("Last file modification:   %s %s %s %jd %s", ctime(&sp->st_mtime), pswd->pw_name, grp->gr_name , (intmax_t) sp->st_size, dp->d_name);
+	l = ctime(&sp->st_mtime);
+	char *curretct_time = get_right_time(l);
+//%jd, (intmax_t) sp->st_size, 
+	printf("time <%s> %s %s %s\n", curretct_time, pswd->pw_name, grp->gr_name, dp->d_name);
+
+	printf("%s\n", l);
+	//free(time);
 	//ft_printf("Last status change:       %s", ctime(sb->st_ctime));
 	//ft_printf("Last file access:         %s", ctime(sb->st_atime));
 }
@@ -141,30 +164,25 @@ int	x(char **argv) {
 	while (argv[index]) {
 		if (argv[index][0] == '-') {
 			if (ft_strchr(argv[index], 't')) {
-				ft_printf("user want to t\n");
 				x.t_flag = true;
 				//here we sort by most recently modified time
 			}
 			if (ft_strchr(argv[index], 'r')) {
-				ft_printf("user want to recurest\n");
 				x.r_flag = true;
 				//here we just reverse some kind of order that ls uses
 				//this goes last since se can just reverse the order of our data strucutre
 			}
 			if (ft_strchr(argv[index], 'a')) {
 				x.a_flag = true;
-				ft_printf("user want to hiden files\n");
 				//include hiden files in your output
 			}
 			if (ft_strchr(argv[index], 'l')) {
-				ft_printf("user want a list\n");
 				x.l_flag = true;
 				//here we will just us a different priting ofrmat
 			}
 			if (ft_strchr(argv[index], 'R')) {
 				index = 2;
 				x.R_flag = true;
-				ft_printf("user want to RECUREST\n");
 				//here I would say we build a data strucure
 				//so we just get all names stat and open dirs maybe same some info for printf
 				while (argv[index]) {
