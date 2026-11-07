@@ -28,6 +28,33 @@ typedef struct s_dir {
 	struct	s_dir	*next;
 }	t_dir;
 
+char	*build_string( struct stat *sp) {
+	char	*tmp;
+
+	tmp = ft_calloc(sizeof(char), 10);
+	ft_memset(tmp, '-', 9);
+	if (tmp == NULL)
+		return NULL;
+	if (S_IRUSR & sp->st_mode)
+		tmp[0] = 'r';
+	if (S_IWUSR & sp->st_mode)
+		tmp[1] = 'w';
+	if (S_IXUSR & sp->st_mode) 
+		tmp[2] = 'x';
+	if (S_IROTH & sp->st_mode)
+		tmp[3] = 'r';
+	if (S_IWOTH & sp->st_mode)
+		tmp[4] = 'w';
+	if (S_IXOTH & sp->st_mode)
+		tmp[5] = 'x';
+	if (S_IRGRP & sp->st_mode)
+		tmp[6] = 'r';
+	if (S_IWGRP & sp->st_mode)
+		tmp[7] = 'w';
+	if (S_IXGRP & sp->st_mode)
+		tmp[8] = 'x';
+	return tmp;
+}
 //need some kind of data structure for storing director information.
 
 //t_args	parse_args(char *args) {
@@ -42,35 +69,33 @@ typedef struct s_dir {
 //so first we need to finsh looping over all files and then we can open a dir go inside it and print it 
 //jjjkk
 
-char	*get_right_time(char *test) {
-	char **bits;
-	char *tmp;
-	char	*min;
 
-	min = ft_calloc(sizeof(char),6);
-	bits = ft_split(test, ' ');
-	tmp = ft_strjoin(bits[2], bits[1]);
-	ft_memmove(min, bits[3], 5);
-	return ft_strjoin(tmp, min);
-}
+/*
+* 
+* 
+*/
 
 void	print_l(struct dirent *dp, struct stat *sp) {
 	(void) dp;
 	struct group *grp;
 	struct passwd *pswd;
+	char	**bits;
+	char	*time_bit;
 	char	*l;
 
+	char	 *premissinons = build_string(sp);	
+	if (premissinons == NULL)
+		return ;
 	grp = getgrgid(sp->st_gid);
 	pswd = getpwuid(sp->st_uid);
 	l = ctime(&sp->st_mtime);
-	char *curretct_time = get_right_time(l);
 //%jd, (intmax_t) sp->st_size, 
-	printf("time <%s> %s %s %s\n", curretct_time, pswd->pw_name, grp->gr_name, dp->d_name);
+	bits = ft_split(l, ' ');
+	time_bit = ft_calloc(sizeof(char), 6);
+	ft_memmove(time_bit, bits[3], 5);
+	printf("%s %s %s %s %s %s %s\n", premissinons, pswd->pw_name, grp->gr_name, bits[2], bits[1], time_bit,  dp->d_name);
 
-	printf("%s\n", l);
-	//free(time);
-	//ft_printf("Last status change:       %s", ctime(sb->st_ctime));
-	//ft_printf("Last file access:         %s", ctime(sb->st_atime));
+	//printf("%s\n", l);
 }
 
 int	read_read(char *path, t_args x) {
@@ -101,6 +126,19 @@ int	read_read(char *path, t_args x) {
 	        //if ((dp->d_name[0] == '.') && (dp->d_name[1] == '\0') || ((dp->d_name[1] == '.') && (dp->d_name[2] == '\0'))) {
 		//	continue ;
 		//}
+//     #define S_IRUSR 0000400  /* read permission, owner */
+//     #define S_IWUSR 0000200  /* write permission, owner */
+//    #define S_IXUSR 0000100
+
+//#define S_IRWXG 0000070    /* RWX mask for group */
+//#define S_IRGRP 0000040    /* R for group */
+//#define S_IWGRP 0000020    /* W for group */
+//#define S_IXGRP 0000010    /* X for group */
+//
+//#define S_IRWXO 0000007    /* RWX mask for other */
+//#define S_IROTH 0000004    /* R for other */
+//#define S_IWOTH 0000002    /* W for other */
+//#define S_IXOTH 0000001    /* X for other */
 		if (S_IFDIR & sp->st_mode && x.R_flag) {
 			//ft_printf("FILE is a dir %s\n", dp->d_name);
 			//so here I want to have a linked list. kind of build a strucutre???? or just fucking printing it? how will I reverse it? Well u can't :D it makes sense to read in all the information in some kind of linked list and the do the priting I guess that is why in the subject they say for accounting for -R.
