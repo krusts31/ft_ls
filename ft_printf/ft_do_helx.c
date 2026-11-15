@@ -13,7 +13,7 @@
 #include "ft_printf.h"
 #include <limits.h>
 
-static int	ft_continue_helx(t_list1 *info, va_list va, t_print *p)
+static int	ft_continue_helx(t_list1 *info, va_list * va, t_print *p)
 {
 	long	num;
 
@@ -21,7 +21,7 @@ static int	ft_continue_helx(t_list1 *info, va_list va, t_print *p)
 		return (0);
 	if (p->d >= INT_MAX - 1 || p->d < INT_MIN + 2)
 		return (0);
-	num = va_arg(va, int);
+	num = va_arg(*va, int);
 	p->a = ft_convert_str_helx(num);
 	if (p->a == NULL)
 		return (0);
@@ -37,7 +37,7 @@ static int	ft_continue_helx(t_list1 *info, va_list va, t_print *p)
 	return (0);
 }
 
-int			ft_do_helx(t_list1 *info, va_list va, t_print *p)
+int			ft_do_helx(t_list1 *info, va_list * va, t_print *p)
 {
 	size_t	index;
 

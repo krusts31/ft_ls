@@ -46,7 +46,7 @@ static int	ft_continue_precentage(t_list1 *info, t_print *p)
 	return (1);
 }
 
-int			ft_do_precentage(t_list1 *info, va_list va, t_print *p)
+int			ft_do_precentage(t_list1 *info, va_list * va, t_print *p)
 {
 	size_t	index;
 

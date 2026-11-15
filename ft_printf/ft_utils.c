@@ -14,14 +14,14 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-void	ft_cs_st(t_print *p, va_list va)
+void	ft_cs_st(t_print *p, va_list * va)
 {
-	p->pad_amount = va_arg(va, int);
+	p->pad_amount = va_arg(*va, int);
 	if (p->pad_amount < 0)
 		p->minuss_present = 1;
 }
 
-int		ft_cs_dot(t_list1 *f, t_print *p, int i, va_list va)
+int		ft_cs_dot(t_list1 *f, t_print *p, int i, va_list * va)
 {
 	p->dot_present = 1;
 	i++;
@@ -37,7 +37,7 @@ int		ft_cs_dot(t_list1 *f, t_print *p, int i, va_list va)
 	}
 	if (f->cs[i] == '*')
 	{
-		p->d = va_arg(va, int);
+		p->d = va_arg(*va, int);
 		if (p->d < 0)
 			p->dot_present = 0;
 		i++;

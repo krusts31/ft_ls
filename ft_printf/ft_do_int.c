@@ -13,7 +13,7 @@
 #include "ft_printf.h"
 #include <limits.h>
 
-static int	ft_continue_int(t_list1 *info, va_list va, t_print *p)
+static int	ft_continue_int(t_list1 *info, va_list * va, t_print *p)
 {
 	long	num;
 
@@ -21,7 +21,7 @@ static int	ft_continue_int(t_list1 *info, va_list va, t_print *p)
 		return (0);
 	if (p->d >= INT_MAX - 1 || p->d < INT_MIN + 2)
 		return (0);
-	num = va_arg(va, int);
+	num = va_arg(*va, int);
 	p->a = ft_itoa(num);
 	if (p->a == NULL)
 		return (0);
@@ -36,7 +36,7 @@ static int	ft_continue_int(t_list1 *info, va_list va, t_print *p)
 		return (ft_minuss_int(p, info));
 }
 
-int			ft_do_int(t_list1 *info, va_list va, t_print *p)
+int			ft_do_int(t_list1 *info, va_list * va, t_print *p)
 {
 	size_t	index;
 

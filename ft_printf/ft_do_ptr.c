@@ -13,13 +13,13 @@
 #include "ft_printf.h"
 #include <limits.h>
 
-static int	ft_continue_ptr(t_list1 *info, va_list va, t_print *p)
+static int	ft_continue_ptr(t_list1 *info, va_list * va, t_print *p)
 {
 	unsigned long	num;
 	char			*tmp;
 
 	tmp = NULL;
-	num = va_arg(va, unsigned long);
+	num = va_arg(*va, unsigned long);
 	p->a = ft_convert_str_ptr(num);
 	if (p->a == NULL)
 		return (0);
@@ -41,7 +41,7 @@ static int	ft_continue_ptr(t_list1 *info, va_list va, t_print *p)
 	return (0);
 }
 
-static int	ft_mid(t_list1 *info, va_list va, t_print *p)
+static int	ft_mid(t_list1 *info, va_list * va, t_print *p)
 {
 	if (p->pad_amount >= INT_MAX - 1 || p->pad_amount < INT_MIN + 2)
 		return (0);
@@ -50,7 +50,7 @@ static int	ft_mid(t_list1 *info, va_list va, t_print *p)
 	return (ft_continue_ptr(info, va, p));
 }
 
-int			ft_do_ptr(t_list1 *info, va_list va, t_print *p)
+int			ft_do_ptr(t_list1 *info, va_list * va, t_print *p)
 {
 	size_t	index;
 

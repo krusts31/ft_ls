@@ -20,9 +20,9 @@ void	ft_con_ptr(t_print *p, char *tmp)
 	p->a = tmp;
 }
 
-int		ft_free_in(t_list1 *info, va_list va, t_print *p)
+int		ft_free_in(t_list1 *info, va_list * va, t_print *p)
 {
-	va_end(va);
+	va_end(*va);
 	if (info != NULL)
 		free(info->cs);
 	free(info);

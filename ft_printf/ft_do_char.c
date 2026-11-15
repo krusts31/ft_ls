@@ -64,13 +64,13 @@ static int	ft_arg(t_print *p, int value)
 	return (ft_arg_memset(p));
 }
 
-static int	ft_continue_char(t_list1 *info, va_list va, t_print *p)
+static int	ft_continue_char(t_list1 *info, va_list *va, t_print *p)
 {
 	int		value;
 
 	if (p->pad_amount >= INT_MAX - 1 || p->pad_amount < INT_MIN + 2)
 		return (0);
-	value = va_arg(va, int);
+	value = va_arg(*va, int);
 	ft_get_pad_char(p);
 	if (value == 0)
 		return (ft_edge(info, p));
@@ -81,7 +81,7 @@ static int	ft_continue_char(t_list1 *info, va_list va, t_print *p)
 	return (ft_print_res(info, p));
 }
 
-int			ft_do_char(t_list1 *info, va_list va, t_print *p)
+int			ft_do_char(t_list1 *info, va_list *va, t_print *p)
 {
 	size_t	index;
 

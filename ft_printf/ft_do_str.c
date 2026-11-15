@@ -12,9 +12,9 @@
 
 #include "ft_printf.h"
 
-static int	ft_continue_str(t_list1 *info, va_list va, t_print *p)
+static int	ft_continue_str(t_list1 *info, va_list *va, t_print *p)
 {
-	p->a = va_arg(va, char *);
+	p->a = va_arg(*va, char *);
 	if (p->a == NULL)
 		p->a = ft_strdup("(null)");
 	else
@@ -30,7 +30,7 @@ static int	ft_continue_str(t_list1 *info, va_list va, t_print *p)
 		return (ft_str_dot(p, info));
 }
 
-int			ft_do_str(t_list1 *info, va_list va, t_print *p)
+int			ft_do_str(t_list1 *info, va_list *va, t_print *p)
 {
 	size_t	index;
 

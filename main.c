@@ -96,7 +96,7 @@ void	print_l(struct dirent *dp, struct stat *sp) {
 	bits = ft_split(l, ' ');
 	time_bit = ft_calloc(sizeof(char), 6);
 	ft_memmove(time_bit, bits[3], 5);
-	printf("%s %s %s %s %s %s %s\n", premissinons, pswd->pw_name, grp->gr_name, bits[2], bits[1], time_bit,  dp->d_name);
+	ft_printf("%s %s %s %s %s %s %s\n", premissinons, pswd->pw_name, grp->gr_name, bits[2], bits[1], time_bit,  dp->d_name);
 
 	//printf("%s\n", l);
 }
@@ -171,6 +171,7 @@ fiel
 			char *tmp = ft_strjoin(path, "/");
 			char *tmp2 = ft_strjoin(tmp, dp->d_name);
 			//ft_printf("going to %s\n", tmp2);
+			ft_printf("%s:\n",tmp2);
 			read_read(tmp2, x);
 			free(tmp);
 			free(tmp2);
