@@ -1,6 +1,7 @@
 # Created by https://www.toptal.com/developers/gitignore/api/c,cmake,zsh,git,macos,vim
 # Edit at https://www.toptal.com/developers/gitignore?templates=c,cmake,zsh,git,macos,vim
 
+ft_ls
 ### C ###
 # Prerequisites
 *.d

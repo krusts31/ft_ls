@@ -31,28 +31,31 @@ typedef struct s_dir {
 char	*build_string( struct stat *sp) {
 	char	*tmp;
 
-	tmp = ft_calloc(sizeof(char), 10);
-	ft_memset(tmp, '-', 9);
+	tmp = ft_calloc(sizeof(char), 12);
+	ft_memset(tmp, '-', 11);
 	if (tmp == NULL)
 		return NULL;
+	if (S_IFDIR & sp->st_mode)
+		tmp[0] = 'd';
 	if (S_IRUSR & sp->st_mode)
-		tmp[0] = 'r';
+		tmp[1] = 'r';
 	if (S_IWUSR & sp->st_mode)
-		tmp[1] = 'w';
+		tmp[2] = 'w';
 	if (S_IXUSR & sp->st_mode) 
-		tmp[2] = 'x';
+		tmp[3] = 'x';
 	if (S_IROTH & sp->st_mode)
-		tmp[3] = 'r';
+		tmp[4] = 'r';
 	if (S_IWOTH & sp->st_mode)
-		tmp[4] = 'w';
+		tmp[5] = 'w';
 	if (S_IXOTH & sp->st_mode)
-		tmp[5] = 'x';
+		tmp[6] = 'x';
 	if (S_IRGRP & sp->st_mode)
-		tmp[6] = 'r';
+		tmp[7] = 'r';
 	if (S_IWGRP & sp->st_mode)
-		tmp[7] = 'w';
+		tmp[8] = 'w';
 	if (S_IXGRP & sp->st_mode)
-		tmp[8] = 'x';
+		tmp[9] = 'x';
+	tmp[10] = '@';
 	return tmp;
 }
 //need some kind of data structure for storing director information.
@@ -102,6 +105,7 @@ int	read_read(char *path, t_args x) {
 	DIR *dirp;
 	struct dirent *dp;
 	struct stat	*sp = malloc(sizeof(struct stat));
+	bool print_new_line	= false;
 
 	dirp = opendir(path);
 	if (dirp == NULL)
@@ -119,6 +123,10 @@ int	read_read(char *path, t_args x) {
 		//ft_printf("FILE SIZE %d\n", sp->st_blocks);
 		if ((dp->d_name[0] == '.' && dp->d_name[1] == '\0') || (dp->d_name[1] == '.' && dp->d_name[2] == '\0')) {
 			//this filters out . and .. we dont want to recurse over those.
+			if (print_new_line == true) {
+				ft_printf("\n");
+				print_new_line = false;
+			}
 			dp = readdir(dirp);
 			continue ;
 		}
@@ -176,12 +184,15 @@ fiel
 			if (x.l_flag) {
 				print_l(dp, sp);
 			} else {
-				ft_printf("name %s\n", dp->d_name);
+				ft_printf("%s\t", dp->d_name);
+				print_new_line = true;
 			}
 		}
 		dp = readdir(dirp);
 	}
 	closedir(dirp);
+	if (print_new_line == true)
+		ft_printf("\n");
 	return 0;
 }
 
