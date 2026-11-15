@@ -1,4 +1,6 @@
 #include <stdbool.h> 
+#include <string.h>
+#include <errno.h>
 #include <pwd.h>
 #include <grp.h>
 #include <time.h>
@@ -28,7 +30,7 @@ typedef struct s_dir {
 	struct	s_dir	*next;
 }	t_dir;
 
-char	*build_string( struct stat *sp) {
+char	*build_string(struct stat *sp) {
 	char	*tmp;
 
 	tmp = ft_calloc(sizeof(char), 12);
@@ -97,17 +99,16 @@ void	print_l(struct dirent *dp, struct stat *sp) {
 	time_bit = ft_calloc(sizeof(char), 6);
 	ft_memmove(time_bit, bits[3], 5);
 	ft_printf("%s %s %s %s %s %s %s\n", premissinons, pswd->pw_name, grp->gr_name, bits[2], bits[1], time_bit,  dp->d_name);
-
-	//printf("%s\n", l);
 }
 
 int	read_read(char *path, t_args x) {
 	DIR *dirp;
+	struct stat	*sp;
 	struct dirent *dp;
-	struct stat	*sp = malloc(sizeof(struct stat));
 	bool print_new_line	= false;
 
 	dirp = opendir(path);
+	dp =  ft_calloc(sizeof(struct dirent), 1);
 	if (dirp == NULL)
 		return (1);
 	dp = readdir(dirp);
@@ -118,7 +119,6 @@ int	read_read(char *path, t_args x) {
 
 	
 	while (dp != NULL) {
-		stat(dp->d_name, sp);
 		//ft_printf("FILE NAME %s\n", dp->d_name);
 		//ft_printf("FILE SIZE %d\n", sp->st_blocks);
 		if ((dp->d_name[0] == '.' && dp->d_name[1] == '\0') || (dp->d_name[1] == '.' && dp->d_name[2] == '\0')) {
@@ -129,6 +129,23 @@ int	read_read(char *path, t_args x) {
 			}
 			dp = readdir(dirp);
 			continue ;
+		}
+		sp = ft_calloc(sizeof(struct stat), 1);
+		//make stat open abs path
+		if (!(path[0] == '.' && path[1] == '\0')) {
+			char *tmp4 = ft_strjoin(path, "/");
+			char *tmp3 = ft_strjoin(tmp4, dp->d_name);
+			if (stat(tmp3, sp)) {
+				perror(strerror(errno));
+				printf("STAT ERROR!!! %s\n", dp->d_name);
+			}
+			free(tmp4);
+			free(tmp3);
+		} else {
+			if (stat(dp->d_name, sp)) {
+				perror(strerror(errno));
+				printf("STAT ERROR!!! %s\n", dp->d_name);
+			}
 		}
 		//ft_printf("sp->d_name[0] == . : %d\n", dp->d_name[0] == '.');
 	        //if ((dp->d_name[0] == '.') && (dp->d_name[1] == '\0') || ((dp->d_name[1] == '.') && (dp->d_name[2] == '\0'))) {
@@ -165,6 +182,7 @@ fiel
 			//
 			//kaut ka te vaig pielikt klat iepreiksejo path....
 			if (!x.a_flag && dp->d_name[0] == '.') {
+				free(sp);
 				dp = readdir(dirp);
 				continue ;
 			}
@@ -172,16 +190,14 @@ fiel
 			char *tmp2 = ft_strjoin(tmp, dp->d_name);
 			//ft_printf("going to %s\n", tmp2);
 			ft_printf("%s:\n",tmp2);
+			print_new_line = false;
 			read_read(tmp2, x);
 			free(tmp);
 			free(tmp2);
 			//push to stack?
 		}
 		//
-		if (!x.a_flag && dp->d_name[0] == '.') {
-			dp = readdir(dirp);
-			continue ;
-		} else {
+		if (!(!x.a_flag && dp->d_name[0] == '.')) {
 			if (x.l_flag) {
 				print_l(dp, sp);
 			} else {
@@ -189,10 +205,11 @@ fiel
 				print_new_line = true;
 			}
 		}
+		free(sp);
 		dp = readdir(dirp);
 	}
 	closedir(dirp);
-	if (print_new_line == true)
+	if (print_new_line == true || dp == NULL)
 		ft_printf("\n");
 	return 0;
 }
