@@ -78,9 +78,6 @@ void	print_l(struct dirent *dp, struct stat *sp) {
 	lp = ft_calloc(sizeof(struct stat), 1);
 	if (premissinons == NULL)
 		return ;
-	if (S_IFLNK & lp->st_mode) {
-		ft_printf("\nlink\n");
-	}
 	if (lstat(dp->d_name, lp) < 0) {
 		perror(strerror(errno));
 		printf("LSTAT ERROR!!! %s\n", dp->d_name);
@@ -96,20 +93,20 @@ void	print_l(struct dirent *dp, struct stat *sp) {
 
 	//bufsize = sp->st_size + 1;
 	//if (sp->st_size == 0) {
-//		bufsize = PATH_MAX;
-//	}
+	//		bufsize = PATH_MAX;
+	//	}
 
 	grp = getgrgid(sp->st_gid);
 	pswd = getpwuid(sp->st_uid);
 	l = ctime(&sp->st_mtime);
-//%jd, (intmax_t) sp->st_size, 
+	//%jd, (intmax_t) sp->st_size, 
 	bits = ft_split(l, ' ');
 	time_bit = ft_calloc(sizeof(char), 6);
 	if (time_bit == NULL) {
 		return ;
 	}
 	ft_memmove(time_bit, bits[3], 5);
-	ft_printf("%s %s %s %d %s %s %s %s", premissinons, pswd->pw_name, grp->gr_name, sp->st_size, bits[2], bits[1], time_bit, dp->d_name);
+	ft_printf("%s %d %s %s %d %s %s %s %s", premissinons, sp->st_nlink, pswd->pw_name, grp->gr_name, sp->st_size, bits[2], bits[1], time_bit, dp->d_name);
 	if (ft_strlen(buf) > 0)
 		ft_printf(" -> %s", buf);
 	ft_printf("\n");
