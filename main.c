@@ -1,4 +1,5 @@
 #include <stdbool.h> 
+#include <limits.h>
 #include <string.h>
 #include <errno.h>
 #include <pwd.h>
@@ -60,50 +61,44 @@ char	*build_string(struct stat *sp) {
 	tmp[10] = '@';
 	return tmp;
 }
-//need some kind of data structure for storing director information.
 
-//t_args	parse_args(char *args) {
-	
-
-//}
-
-//maybe the logic is first print all the files
-//and if you ecounter a directory push taht on a stack and then just loop over the stack?
-
-//its more that current dir is respected its not about how deep you ar ein recursions its more like
-//so first we need to finsh looping over all files and then we can open a dir go inside it and print it 
-//jjjkk
-
-
-/*
-* 
-* 
-*/
-
-void	print_l(struct dirent *dp, struct stat *sp) {
+void	print_l(struct dirent *dp, struct stat *sp, struct stat *lp) {
 	(void) dp;
 	struct group *grp;
 	struct passwd *pswd;
 	char	**bits;
 	char	*time_bit;
+	//ssize_t bufsize;
 	char	*l;
 
 	char	 *premissinons = build_string(sp);	
 	if (premissinons == NULL)
 		return ;
+	if (S_IFLNK & lp->st_mode) {
+		ft_printf("\nlink\n");
+	}
+	//bufsize = sp->st_size + 1;
+	//if (sp->st_size == 0) {
+//		bufsize = PATH_MAX;
+//	}
+
 	grp = getgrgid(sp->st_gid);
 	pswd = getpwuid(sp->st_uid);
 	l = ctime(&sp->st_mtime);
 //%jd, (intmax_t) sp->st_size, 
 	bits = ft_split(l, ' ');
 	time_bit = ft_calloc(sizeof(char), 6);
+	if (time_bit == NULL) {
+		return ;
+	}
 	ft_memmove(time_bit, bits[3], 5);
-	ft_printf("%s %s %s %s %s %s %s\n", premissinons, pswd->pw_name, grp->gr_name, bits[2], bits[1], time_bit,  dp->d_name);
+	ft_printf("%s %s %s %d %s %s %s %s\n", premissinons, pswd->pw_name, grp->gr_name, sp->st_size, bits[2], bits[1], time_bit,  dp->d_name);
 }
 
 int	read_read(char *path, t_args x) {
 	DIR *dirp;
 	struct stat	*sp;
+	struct stat	*lp;
 	struct dirent *dp;
 	bool print_new_line	= false;
 
@@ -131,7 +126,8 @@ int	read_read(char *path, t_args x) {
 			continue ;
 		}
 		sp = ft_calloc(sizeof(struct stat), 1);
-		//make stat open abs path
+		lp = ft_calloc(sizeof(struct stat), 1);
+		//aizmirsu domu sim
 		if (!(path[0] == '.' && path[1] == '\0')) {
 			char *tmp4 = ft_strjoin(path, "/");
 			char *tmp3 = ft_strjoin(tmp4, dp->d_name);
@@ -139,48 +135,30 @@ int	read_read(char *path, t_args x) {
 				perror(strerror(errno));
 				printf("STAT ERROR!!! %s\n", dp->d_name);
 			}
+			if (lstat(tmp3, lp) < 0) {
+				perror(strerror(errno));
+				printf("LSTAT ERROR!!! %s\n", dp->d_name);
+			}
+			if (S_ISLNK(lp->st_mode) == 1) {
+				ft_printf("file is link");
+			}
 			free(tmp4);
 			free(tmp3);
+		//aizmirsu domu sim laikam ja local dir .?
 		} else {
 			if (stat(dp->d_name, sp)) {
 				perror(strerror(errno));
 				printf("STAT ERROR!!! %s\n", dp->d_name);
 			}
+			if (lstat(dp->d_name, lp) < 0) {
+				perror(strerror(errno));
+				printf("LSTAT ERROR!!! %s\n", dp->d_name);
+			}
+			if (S_ISLNK(lp->st_mode) == 1) {
+				ft_printf("file is link");
+			}
 		}
-		//ft_printf("sp->d_name[0] == . : %d\n", dp->d_name[0] == '.');
-	        //if ((dp->d_name[0] == '.') && (dp->d_name[1] == '\0') || ((dp->d_name[1] == '.') && (dp->d_name[2] == '\0'))) {
-		//	continue ;
-		//}
-//     #define S_IRUSR 0000400  /* read permission, owner */
-//     #define S_IWUSR 0000200  /* write permission, owner */
-//    #define S_IXUSR 0000100
-
-//#define S_IRWXG 0000070    /* RWX mask for group */
-//#define S_IRGRP 0000040    /* R for group */
-//#define S_IWGRP 0000020    /* W for group */
-//#define S_IXGRP 0000010    /* X for group */
-//
-//#define S_IRWXO 0000007    /* RWX mask for other */
-//#define S_IROTH 0000004    /* R for other */
-//#define S_IWOTH 0000002    /* W for other */
-//#define S_IXOTH 0000001    /* X for other */
 		if (S_IFDIR & sp->st_mode && x.R_flag) {
-			//ft_printf("FILE is a dir %s\n", dp->d_name);
-			//so here I want to have a linked list. kind of build a strucutre???? or just fucking printing it? how will I reverse it? Well u can't :D it makes sense to read in all the information in some kind of linked list and the do the priting I guess that is why in the subject they say for accounting for -R.
-			//how do we doo this some 
-
-			/*
-
-some struct linked list that would be a dir
-then we weould say if a then we would say het I am parent dir which is always the first object read in I think the . some then we know that all the files have this set to false ro something
-when we print we check hey parent dir and all the other files that follow are regular files in that dir are just files.
-. dir
-file file file file file
-fiel 
-.dir
-*/
-			//
-			//kaut ka te vaig pielikt klat iepreiksejo path....
 			if (!x.a_flag && dp->d_name[0] == '.') {
 				free(sp);
 				dp = readdir(dirp);
@@ -189,7 +167,7 @@ fiel
 			char *tmp = ft_strjoin(path, "/");
 			char *tmp2 = ft_strjoin(tmp, dp->d_name);
 			//ft_printf("going to %s\n", tmp2);
-			ft_printf("%s:\n",tmp2);
+			ft_printf("\n%s:\n",tmp2);
 			print_new_line = false;
 			read_read(tmp2, x);
 			free(tmp);
@@ -199,7 +177,11 @@ fiel
 		//
 		if (!(!x.a_flag && dp->d_name[0] == '.')) {
 			if (x.l_flag) {
-				print_l(dp, sp);
+				//in case we have a link
+				lp = ft_calloc(sizeof(struct stat), 1);
+				if (lp == NULL)
+					return 1;
+				print_l(dp, sp, lp);
 			} else {
 				ft_printf("%s\t", dp->d_name);
 				print_new_line = true;
