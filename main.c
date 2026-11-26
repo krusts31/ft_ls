@@ -1,4 +1,5 @@
 #include <stdbool.h> 
+#include <unistd.h>
 #include <limits.h>
 #include <string.h>
 #include <errno.h>
@@ -140,7 +141,6 @@ int	read_read(char *path, t_args x) {
 				printf("LSTAT ERROR!!! %s\n", dp->d_name);
 			}
 			if (S_ISLNK(lp->st_mode) == 1) {
-				ft_printf("file is link");
 			}
 			free(tmp4);
 			free(tmp3);
@@ -155,7 +155,12 @@ int	read_read(char *path, t_args x) {
 				printf("LSTAT ERROR!!! %s\n", dp->d_name);
 			}
 			if (S_ISLNK(lp->st_mode) == 1) {
-				ft_printf("file is link");
+				char	buf[1024];
+
+				ssize_t	x = readlink(dp->d_name, buf, (sizeof(buf) - 1));
+				buf[x] = '\0';
+				printf("BUF: %s\n", buf);
+				//buff just has the sstuff that the link points to
 			}
 		}
 		if (S_IFDIR & sp->st_mode && x.R_flag) {
