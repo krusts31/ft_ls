@@ -1,5 +1,14 @@
 # ft\_ls
 
+we can sart with cleaning up the code.
+and tetesting for failed functions
+
+TODO
+-R prints bad
+some kind of 	Too many levels of symbolic links:
+aaaaand . .. when -l
+and -r
+
 ## DAMN? 
 wow just did you know ls sort stuff alhapbeticaly. after reading the man I found out that this alphabetical stuff depends on the filesystem.
 

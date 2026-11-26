@@ -146,9 +146,9 @@ int	read_read(char *path, t_args x) {
 		if (!(path[0] == '.' && path[1] == '\0')) {
 			char *tmp4 = ft_strjoin(path, "/");
 			char *tmp3 = ft_strjoin(tmp4, dp->d_name);
-			if (stat(tmp3, sp)) {
+			if (stat(tmp3, sp) < 0) {
 				perror(strerror(errno));
-				printf("STAT ERROR!!! %s\n", dp->d_name);
+				printf("1 STAT ERROR!!! %s\n", dp->d_name);
 			}
 			free(tmp4);
 			free(tmp3);
@@ -156,7 +156,7 @@ int	read_read(char *path, t_args x) {
 		} else {
 			if (stat(dp->d_name, sp)) {
 				perror(strerror(errno));
-				printf("STAT ERROR!!! %s\n", dp->d_name);
+				printf("2 STAT ERROR!!! %s\n", dp->d_name);
 			}
 		}
 		if (S_IFDIR & sp->st_mode && x.R_flag) {
