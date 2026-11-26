@@ -63,21 +63,37 @@ char	*build_string(struct stat *sp) {
 	return tmp;
 }
 
-void	print_l(struct dirent *dp, struct stat *sp, struct stat *lp) {
+void	print_l(struct dirent *dp, struct stat *sp) {
 	(void) dp;
 	struct group *grp;
 	struct passwd *pswd;
+	struct stat	*lp;
 	char	**bits;
 	char	*time_bit;
+	char	*buf = ft_calloc(PATH_MAX, 1);
 	//ssize_t bufsize;
 	char	*l;
 
 	char	 *premissinons = build_string(sp);	
+	lp = ft_calloc(sizeof(struct stat), 1);
 	if (premissinons == NULL)
 		return ;
 	if (S_IFLNK & lp->st_mode) {
 		ft_printf("\nlink\n");
 	}
+	if (lstat(dp->d_name, lp) < 0) {
+		perror(strerror(errno));
+		printf("LSTAT ERROR!!! %s\n", dp->d_name);
+	}
+	if (S_ISLNK(lp->st_mode) == 1) {
+
+		ssize_t	x = readlink(dp->d_name, buf, (sizeof(buf) - 1));
+		buf[x] = '\0';
+		//printf("BUF: %s\n", buf);
+		//buff just has the sstuff that the link points to
+		//ft_strjoin(dp->d_name, buf);
+	}
+
 	//bufsize = sp->st_size + 1;
 	//if (sp->st_size == 0) {
 //		bufsize = PATH_MAX;
@@ -93,13 +109,15 @@ void	print_l(struct dirent *dp, struct stat *sp, struct stat *lp) {
 		return ;
 	}
 	ft_memmove(time_bit, bits[3], 5);
-	ft_printf("%s %s %s %d %s %s %s %s\n", premissinons, pswd->pw_name, grp->gr_name, sp->st_size, bits[2], bits[1], time_bit,  dp->d_name);
+	ft_printf("%s %s %s %d %s %s %s %s", premissinons, pswd->pw_name, grp->gr_name, sp->st_size, bits[2], bits[1], time_bit, dp->d_name);
+	if (ft_strlen(buf) > 0)
+		ft_printf(" -> %s", buf);
+	ft_printf("\n");
 }
 
 int	read_read(char *path, t_args x) {
 	DIR *dirp;
 	struct stat	*sp;
-	struct stat	*lp;
 	struct dirent *dp;
 	bool print_new_line	= false;
 
@@ -127,7 +145,6 @@ int	read_read(char *path, t_args x) {
 			continue ;
 		}
 		sp = ft_calloc(sizeof(struct stat), 1);
-		lp = ft_calloc(sizeof(struct stat), 1);
 		//aizmirsu domu sim
 		if (!(path[0] == '.' && path[1] == '\0')) {
 			char *tmp4 = ft_strjoin(path, "/");
@@ -136,12 +153,6 @@ int	read_read(char *path, t_args x) {
 				perror(strerror(errno));
 				printf("STAT ERROR!!! %s\n", dp->d_name);
 			}
-			if (lstat(tmp3, lp) < 0) {
-				perror(strerror(errno));
-				printf("LSTAT ERROR!!! %s\n", dp->d_name);
-			}
-			if (S_ISLNK(lp->st_mode) == 1) {
-			}
 			free(tmp4);
 			free(tmp3);
 		//aizmirsu domu sim laikam ja local dir .?
@@ -149,18 +160,6 @@ int	read_read(char *path, t_args x) {
 			if (stat(dp->d_name, sp)) {
 				perror(strerror(errno));
 				printf("STAT ERROR!!! %s\n", dp->d_name);
-			}
-			if (lstat(dp->d_name, lp) < 0) {
-				perror(strerror(errno));
-				printf("LSTAT ERROR!!! %s\n", dp->d_name);
-			}
-			if (S_ISLNK(lp->st_mode) == 1) {
-				char	buf[1024];
-
-				ssize_t	x = readlink(dp->d_name, buf, (sizeof(buf) - 1));
-				buf[x] = '\0';
-				printf("BUF: %s\n", buf);
-				//buff just has the sstuff that the link points to
 			}
 		}
 		if (S_IFDIR & sp->st_mode && x.R_flag) {
@@ -183,10 +182,7 @@ int	read_read(char *path, t_args x) {
 		if (!(!x.a_flag && dp->d_name[0] == '.')) {
 			if (x.l_flag) {
 				//in case we have a link
-				lp = ft_calloc(sizeof(struct stat), 1);
-				if (lp == NULL)
-					return 1;
-				print_l(dp, sp, lp);
+				print_l(dp, sp);
 			} else {
 				ft_printf("%s\t", dp->d_name);
 				print_new_line = true;
